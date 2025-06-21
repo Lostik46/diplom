@@ -7,7 +7,6 @@ from django.core.validators import RegexValidator
 
 def validate_russian_mobile(value):
     try:
-<<<<<<< HEAD
         # Удаляем все нецифровые символы для проверки
         digits = ''.join(filter(str.isdigit, value))
         if not digits.startswith('7') or len(digits) != 11:
@@ -18,13 +17,11 @@ def validate_russian_mobile(value):
             raise ValidationError("Номер телефона недействителен")
     except phonenumbers.phonenumberutil.NumberParseException:
         raise ValidationError("Неверный формат номера телефона")
-=======
         phone = phonenumbers.parse(value, "RU")
         if not phonenumbers.is_valid_number(phone):
             raise ValidationError("Номер телефона недействителен.")
     except phonenumbers.phonenumberutil.NumberParseException:
         raise ValidationError("Неверный формат номера телефона.")
->>>>>>> 75f9f11385247bda242880355abcf51ee6601242
 
 cyrillic_validator = RegexValidator(
     regex='^[а-яА-ЯёЁ\s]+$', 
@@ -69,13 +66,11 @@ class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Псевдоним')
     first_name = models.CharField(max_length=250, validators=[cyrillic_validator], verbose_name='Имя')
     last_name = models.CharField(max_length=250, validators=[cyrillic_validator], verbose_name='Фамилия')
-<<<<<<< HEAD
     mobile = models.CharField(max_length=18, null=False, validators=[validate_russian_mobile], 
                              verbose_name='Мобильный телефон')  # Изменили длину на 18
     # остальные поля без изменений
-=======
+
     mobile = models.CharField(max_length=11, null=False, validators=[validate_russian_mobile], verbose_name='Мобильный телефон')
->>>>>>> 75f9f11385247bda242880355abcf51ee6601242
     email = models.CharField(max_length=50, null=True, blank=True, verbose_name='Электронная почта')
     address = models.CharField(max_length=40, null=True, blank=True, verbose_name='Адрес')
 
