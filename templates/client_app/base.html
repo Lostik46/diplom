@@ -1,0 +1,85 @@
+{%if request.user.is_authenticated%}
+  {% include "client_app/client_navbar.html" %}
+{%else%}
+  {% include "client_app/navbar.html" %}
+{%endif%}
+<title>Scent Soul</title>
+{% block content %}
+    <!-- Отображение сообщений -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="{% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <script>
+        function removeMessages() {
+            const messages = document.querySelectorAll('.messages div');
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.remove(); 
+                }, 2000);
+            });
+        }
+    
+        window.onload = removeMessages;
+    </script>
+{% endblock content %}
+<br><br><br><br><br>
+<footer style="background-color: #ffe4e1; color: #A65249; padding: 40px 20px; font-family: Arial, sans-serif;">
+  <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between;">
+      <!-- Блок с контактной информацией -->
+      <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
+          <h3 style="color: #A65249; margin-bottom: 15px;">Контактная информация</h3>
+          <p style="margin: 5px 0;"><strong>Адрес:</strong> Советская площадь, 9, Рыльск</p>
+          <p style="margin: 5px 0;"><strong>Телефон:</strong> +7 (995) 241-22-35</p>
+          <p style="margin: 5px 0;"><strong>Email:</strong> scent&soul@mail.com</p>
+      </div>
+
+      <!-- Блок с быстрыми ссылками -->
+      <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
+          <h3 style="color: #A65249; margin-bottom: 15px;">Быстрые ссылки</h3>
+          <ul style="list-style: none; padding: 0;">
+              <li style="margin: 5px 0;"><a href="/" style="color: #A65249; text-decoration: none;">Главная</a></li>
+              <li style="margin: 5px 0;"><a href="/about_us" style="color: #A65249; text-decoration: none;">О нас</a></li>
+              <li style="margin: 5px 0;"><a href="/catalog" style="color: #A65249; text-decoration: none;">Каталог</a></li>
+          </ul>
+      </div>
+<<<<<<< HEAD
+=======
+
+      <!-- Блок с социальными сетями -->
+      <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
+          <h3 style="color: #A65249; margin-bottom: 15px;">Мы в соцсетях</h3>
+          <div style="display: flex; gap: 10px;">
+              <a href="https://web.telegram.org" target="_blank" style="color: #ecf0f1; text-decoration: none;">
+                  <img src="https://img.icons8.com/?size=100&id=yEmPT1iidhE0&format=png&color=000000" alt="Telegramm" style="width: 32px; height: 32px;">
+              </a>
+              <a href="https://www.whatsapp.com" target="_blank" style="color: #ecf0f1; text-decoration: none;">
+                  <img src="https://img.icons8.com/?size=100&id=5lQKOaVNF38O&format=png&color=000000" alt="Whatsapp" style="width: 32px; height: 32px;">
+              </a>
+              <a href="https://vk.com" target="_blank" style="color: #ecf0f1; text-decoration: none;">
+                  <img src="https://img.icons8.com/?size=100&id=w8ni4f21Kur1&format=png&color=000000" alt="VK" style="width: 32px; height: 32px;">
+              </a>
+          </div>
+      </div>
+
+      <!-- Блок с подпиской на рассылку -->
+      <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
+          <h3 style="color: #A65249; margin-bottom: 15px;">Подпишитесь на новости</h3>
+          <form style="display: flex; gap: 10px;">
+              <input type="email" placeholder="Ваш email" style="padding: 10px; border: none; border-radius: 5px; flex: 1;">
+              <button type="submit" style="padding: 10px 20px; background-color: #A65249; color: #ecf0f1; border: none; border-radius: 5px; cursor: pointer;">Подписаться</button>
+          </form>
+      </div>
+>>>>>>> 75f9f11385247bda242880355abcf51ee6601242
+  </div>
+
+  <!-- Копирайт -->
+  <div style="text-align: center; margin-top: 20px; border-top: 1px solid #34495e; padding-top: 20px;">
+      <p style="margin: 0;">&copy; 2025 Scent Soul. Все права защищены.</p>
+  </div>
+</footer>

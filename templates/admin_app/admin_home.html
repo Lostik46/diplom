@@ -1,0 +1,190 @@
+{% include "admin_app/navbar.html" %}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        /* Стили для прямоугольников с закругленными углами */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            width: 30%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            /* Убираем подчеркивание у ссылок */
+            color: inherit;
+            /* Наследуем цвет текста */
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            /* Убираем подчеркивание при наведении */
+        }
+
+        .stat-box h3 {
+            font-size: 2rem;
+            /* Увеличили размер текста */
+            color: #CE0071;
+            margin-bottom: 10px;
+            text-decoration: none;
+            /* Убираем подчеркивание у заголовков */
+        }
+
+        .stat-box p {
+            font-size: 3rem;
+            /* Увеличили размер текста */
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            /* Убираем подчеркивание у текста */
+        }
+
+        /* Стили для статистики */
+        .statistics {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .statistics h2 {
+            font-size: 2rem;
+            color: #CE0071;
+            margin-bottom: 20px;
+        }
+
+        .statistics table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .statistics th,
+        .statistics td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .statistics th {
+            background-color: #CE0071;
+            color: #fff;
+        }
+
+        .statistics tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Стили для настроек */
+        .settings {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings h2 {
+            font-size: 2rem;
+            color: #CE0071;
+            margin-bottom: 20px;
+        }
+
+        .settings label {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .settings select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        /* Остальные стили (статистика, настройки) остаются без изменений */
+    </style>
+</head>
+
+<body>
+    <!-- Прямоугольники с закругленными углами -->
+    <div class="stats-container">
+        <!-- Прямоугольник для клиентов -->
+        <a href="{% url 'admin_clients' %}" class="stat-box">
+            <h3>Клиенты</h3>
+            <p>{{ total_clients }}</p>
+        </a>
+
+        <!-- Прямоугольник для заказов -->
+        <a href="{% url 'admin_orders' %}" class="stat-box">
+            <h3>Заказы</h3>
+            <p>{{ total_orders }}</p>
+        </a>
+
+        <!-- Прямоугольник для отзывов -->
+        <a href="{% url 'admin_reviews' %}" class="stat-box">
+            <h3>Отзывы</h3>
+            <p>{{ total_reviews }}</p>
+        </a>
+    </div>
+
+    <!-- Статистика -->
+    <div class="statistics">
+        <h2>Статистика за последние 7 дней</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Показатель</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Новые заказы</td>
+                    <td>{{ orders_last_7_days }}</td>
+                </tr>
+                <tr>
+                    <td>Новые отзывы</td>
+                    <td>{{ reviews_last_7_days }}</td>
+                </tr>
+                <tr>
+                    <td>Новые регистрации</td>
+                    <td>{{ new_clients_last_7_days }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Настройки отображения статистики -->
+    <div class="settings">
+        <h2>Настройки статистики</h2>
+        <label for="period">Выберите период:</label>
+        <select id="period">
+            <option value="7">Последние 7 дней</option>
+            <option value="30">Последние 30 дней</option>
+            <option value="365">Последний год</option>
+        </select>
+    </div>
+    <script>
+        document.getElementById('period').addEventListener('change', function () {
+            const period = this.value;
+        });
+    </script>
+</body>
+
+</html>

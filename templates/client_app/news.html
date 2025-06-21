@@ -1,0 +1,82 @@
+{% extends "client_app/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    .news-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .news-item {
+        display: flex; /* Используем Flexbox для расположения элементов */
+        background-color: #ffe4e1;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        gap: 20px; /* Отступ между изображением и текстом */
+    }
+
+    .news-item img {
+        flex: 1;
+        background-color: #ffe4e1;
+        padding: 12px;
+        text-align: center;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .news-content {
+        flex: 1; /* Текст занимает оставшееся пространство */
+    }
+
+    .news-item h2 {
+        color: #A65249;
+        margin-top: 0;
+    }
+
+    .news-item .publish-date {
+        color: #A65249;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .news-item .short-text {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #A65249;
+        margin-bottom: 10px;
+    }
+
+    .news-item .full-text {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #A65249;
+    }
+</style>
+
+<div class="news-container">
+    {% for item in news %}
+    <div class="news-item">
+        <!-- Изображение новости -->
+        {% if item.img %}
+        <img src="{{ item.img.url }}" alt="{{ item.title }}">
+        {% else %}
+        <img src="{% static 'news_img/default_image.jpg' %}" alt="Default Image">
+        {% endif %}
+
+        <!-- Текст и информация -->
+        <div class="news-content">
+            <h2>{{ item.title }}</h2>
+            <div class="publish-date">Опубликовано: {{ item.publish_date|date:"d.m.Y H:i" }}</div>
+            <div class="short-text">{{ item.short_text }}</div>
+            <div class="full-text">{{ item.text }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

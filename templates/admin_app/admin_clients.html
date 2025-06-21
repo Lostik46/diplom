@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        /* Ваши существующие стили */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: #CE0071;
+            font-weight: bold;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            width: 95%;
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .table thead {
+            background-color: #CE0071;
+            color: #fff;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .table th {
+            font-weight: bold;
+            font-size: 2rem;
+            user-select: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody td {
+            font-size: 1.8rem;
+        }
+
+        .table tbody td:first-child {
+            font-weight: bold;
+            color: #CE0071;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table tbody tr {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #CE0071;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .floating-button svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .highlighted-row {
+            background-color: #e0f7ff !important;
+            /* Бледно-синий цвет */
+        }
+    </style>
+</head>
+
+<body>
+    {% include "admin_app/navbar.html" %}
+
+    <h1>Клиенты</h1>
+    <div class="table-container">
+        <table class="table" id="client-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('user')">Псевдоним <span id="user-sort-icon"></span></th>
+                    <th onclick="sortTable('first_name')">Имя <span id="first_name-sort-icon"></span></th>
+                    <th onclick="sortTable('last_name')">Фамилия <span id="last_name-sort-icon"></span></th>
+                    <th onclick="sortTable('mobile')">Телефон <span id="mobile-sort-icon"></span></th>
+                    <th onclick="sortTable('email')">Электронная почта <span id="email-sort-icon"></span></th>
+                    <th onclick="sortTable('address')">Адрес <span id="address-sort-icon"></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr data-client-id="{{ client.id }}" {% if client.id|stringformat:"s" == highlight_id %}class="highlighted-row"{% endif %}>
+                    <td>{{ client.user.username }}</td>
+                    <td>{{ client.user.first_name }}</td> <!-- Имя из таблицы User -->
+                    <td>{{ client.user.last_name }}</td> <!-- Фамилия из таблицы User -->
+                    <td>{{ client.mobile }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.address }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let clickCount = {}; // Счетчик нажатий для каждой колонки
+
+        // Функция для сортировки таблицы
+        function sortTable(column) {
+            const table = document.getElementById("client-table");
+            const rows = Array.from(table.tBodies[0].rows);
+            const icon = document.getElementById(`${column}-sort-icon`);
+
+            // Инициализация счетчика, если он еще не существует
+            if (!clickCount[column]) {
+                clickCount[column] = 0;
+            }
+
+            // Увеличиваем счетчик нажатий
+            clickCount[column]++;
+
+            // Если счетчик достиг 3, сбрасываем его и сортировку
+            if (clickCount[column] > 2) {
+                clickCount[column] = 0;
+                icon.innerHTML = ''; // Убираем иконку сортировки
+                // Восстанавливаем исходный порядок строк
+                const originalRows = Array.from(table.tBodies[0].rows);
+                table.tBodies[0].innerHTML = '';
+                originalRows.forEach(row => table.tBodies[0].appendChild(row));
+                return;
+            }
+
+            // Определяем порядок сортировки
+            if (clickCount[column] === 1) {
+                icon.innerHTML = '&#9650;'; // Треугольник вверх (сортировка по возрастанию)
+            } else if (clickCount[column] === 2) {
+                icon.innerHTML = '&#9660;'; // Треугольник вниз (сортировка по убыванию)
+            }
+
+            // Сортировка строк
+            rows.sort((a, b) => {
+                const aValue = a.cells[
+                    column === 'user' ? 0 :
+                    column === 'first_name' ? 1 :
+                    column === 'last_name' ? 2 :
+                    column === 'mobile' ? 3 :
+                    column === 'email' ? 4 :
+                    5 // address
+                ].innerText;
+                const bValue = b.cells[
+                    column === 'user' ? 0 :
+                    column === 'first_name' ? 1 :
+                    column === 'last_name' ? 2 :
+                    column === 'mobile' ? 3 :
+                    column === 'email' ? 4 :
+                    5 // address
+                ].innerText;
+
+                if (clickCount[column] === 1) {
+                    return aValue.localeCompare(bValue, undefined, { numeric: true }); // По возрастанию
+                } else if (clickCount[column] === 2) {
+                    return bValue.localeCompare(aValue, undefined, { numeric: true }); // По убыванию
+                }
+            });
+
+            // Очищаем таблицу и добавляем отсортированные строки
+            table.tBodies[0].innerHTML = '';
+            rows.forEach(row => table.tBodies[0].appendChild(row));
+        }
+    </script>
+</body>
+
+</html>

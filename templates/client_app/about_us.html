@@ -1,0 +1,185 @@
+{% extends "client_app/base.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<style>
+    main {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .content-block {
+        display: flex;
+        align-items: center;
+        margin-bottom: 40px;
+        gap: 20px;
+    }
+
+    .content-block.reverse {
+        flex-direction: row;
+    }
+
+    .text {
+        background-color: #ffe4e1;
+        padding: 8px;
+        border-radius: 8px;
+        flex: 1;
+    }
+
+    .content-block .image-placeholder {
+        flex: 1;
+        background-color: #ffe4e1;
+        padding: 12px;
+        text-align: center;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .content-block .image-placeholder img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 10px;
+    }
+
+    h2 {
+        color: #A65249;
+        border-bottom: 2px solid #A65249;
+        padding-bottom: 10px;
+    }
+    #map {
+        height: 400px; /* Высота карты */
+        width: 100%; /* Ширина карты */
+        border-radius: 10px; /* Закругление углов */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тень */
+        margin-top: 20px; /* Отступ сверху */
+    }
+</style>
+
+<body>
+    <main>
+        <section class="content-block reverse">
+            <div class="image-placeholder">
+                <img src="{% static 'img/ScentSoul.png' %}" alt="ScentSoul">
+            </div>
+            <div class="text">
+                <h2>Добро пожаловать в Scent Soul</h2>
+                <p>Scent Soul — это не просто магазин духов, это место, где каждая бутылочка аромата становится частью
+                    вашей души. Мы предлагаем уникальную коллекцию парфюмерии, которая сочетает в себе изысканность,
+                    качество и индивидуальность. Наши ароматы созданы для тех, кто ценит красоту и стремится подчеркнуть
+                    свою неповторимость.</p>
+                <p>В Scent Soul вы найдете духи на любой вкус — от классических композиций до современных шедевров. Мы
+                    тщательно отбираем каждый продукт, чтобы предложить вам только лучшее. Позвольте себе окунуться в
+                    мир ароматов, которые вдохновляют, удивляют и очаровывают.</p>
+            </div>
+        </section>
+
+        <section class="content-block">
+            <div class="text">
+                <h2>Что такое парфюмерия?</h2>
+                <p>Парфюмерия — это искусство создания ароматов, которые способны подчеркнуть индивидуальность, вызвать
+                    эмоции и оставить незабываемое впечатление. Духи — это не просто аромат, это история, настроение и
+                    характер, воплощенные в тонких нотах.</p>
+                <p>Каждый флакон духов — это уникальная композиция, состоящая из верхних, средних и базовых нот, которые
+                    раскрываются постепенно, создавая гармонию и завершенность. Парфюмерия — это не просто аксессуар,
+                    это способ выразить себя и подчеркнуть свою уникальность.</p>
+            </div>
+            <div class="image-placeholder">
+                <img src="{% static 'img/the_art_of_fragrance_creation.jpg' %}" alt="Парфюмерия">
+            </div>
+        </section>
+
+        <section class="content-block reverse">
+            <div class="text">
+                <h2>Преимущества изысканных ароматов</h2>
+                <ul>
+                    <li><strong>Подчеркивание индивидуальности:</strong> Аромат — это визитная карточка, которая
+                        запоминается и выделяет вас из толпы.</li>
+                    <li><strong>Создание настроения:</strong> Духи способны вдохновлять, успокаивать или заряжать
+                        энергией, в зависимости от выбранного аромата.</li>
+                    <li><strong>Долговечность:</strong> Качественные духи сохраняют свой аромат на протяжении всего дня,
+                        постепенно раскрывая свои ноты.</li>
+                    <li><strong>Универсальность:</strong> Парфюмерия подходит для любого случая — будь то повседневный
+                        образ, деловая встреча или романтический вечер.</li>
+                </ul>
+            </div>
+            <div class="text">
+                <h2>Советы по выбору духов</h2>
+                <ul>
+                    <li><strong>Определите свои предпочтения:</strong> Подумайте, какие ноты вам нравятся — цветочные,
+                        древесные, цитрусовые или пряные.</li>
+                    <li><strong>Тестируйте ароматы:</strong> Наносите духи на кожу и дайте им раскрыться, чтобы
+                        почувствовать все ноты.</li>
+                    <li><strong>Учитывайте время года:</strong> Летом выбирайте свежие и легкие ароматы, а зимой — более
+                        насыщенные и теплые.</li>
+                    <li><strong>Слушайте свои ощущения:</strong> Аромат должен вызывать приятные эмоции и ассоциации.
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <section class="content-block">
+            <div id="map" style="height: 600px; width: 100%; border-radius: 10px;"></div>
+        </section>
+    </main>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Инициализация карты
+        const map = L.map('map', {attributionControl: false }).setView([51.571924, 34.687043], 15); // Координаты Рыльска
+    
+        // Добавление слоя с картой (используем OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    
+        // Добавление маркера с указанным адресом
+        L.marker([51.571924, 34.687043]).addTo(map)
+            .bindPopup('город Рыльск, улица Советская площадь, дом 9')
+            .openPopup();
+    </script>
+</body>
+{% endblock content %}
+<section class="content-block">
+    <div class="text">
+        <h2>Кому подходят изысканные ароматы?</h2>
+        <p>Парфюмерия — это универсальный аксессуар, который подходит каждому. Независимо от возраста, пола или
+            стиля жизни, вы можете найти аромат, который станет вашим спутником. Вот несколько примеров:</p>
+        <ul>
+            <li><strong>Для романтиков:</strong> Цветочные и восточные ароматы, которые подчеркивают
+                чувственность и нежность.</li>
+            <li><strong>Для деловых людей:</strong> Древесные и свежие композиции, которые добавляют уверенности
+                и солидности.</li>
+            <li><strong>Для любителей приключений:</strong> Пряные и экзотические ароматы, которые пробуждают
+                жажду новых открытий.</li>
+            <li><strong>Для ценителей классики:</strong> Универсальные ароматы с нотами цитрусовых, мускуса и
+                ванили, которые никогда не выходят из моды.</li>
+        </ul>
+    </div>
+    <div class="image-placeholder">
+        <img src="{% static 'img/ScentSoul.png' %}" alt="Любители парфюмерии">
+    </div>
+</section>
+<section class="content-block">
+    <div class="text">
+        <h2>Популярные бренды парфюмерии</h2>
+        <p>Мир парфюмерии предлагает множество брендов, каждый из которых славится своими уникальными ароматами.
+            Вот некоторые из них:</p>
+        <ul>
+            <li><strong>Chanel:</strong> Легендарные ароматы, такие как Chanel №5, которые стали символом
+                элегантности и роскоши.</li>
+            <li><strong>Dior:</strong> Изысканные композиции, такие как J'adore и Sauvage, которые покоряют
+                сердца миллионов.</li>
+            <li><strong>Tom Ford:</strong> Смелые и чувственные ароматы, которые подчеркивают индивидуальность.
+            </li>
+            <li><strong>Creed:</strong> Эксклюзивные духи, созданные с использованием редких ингредиентов.</li>
+        </ul>
+    </div>
+    <div class="image-placeholder">
+        <img src="{% static 'img/ScentSoul.png' %}" alt="Бренды парфюмерии">
+    </div>
+</section>

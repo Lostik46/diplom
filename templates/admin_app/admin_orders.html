@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        /* Ваши существующие стили */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: #CE0071;
+            font-weight: bold;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            width: 95%;
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .table thead {
+            background-color: #CE0071;
+            color: #fff;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .table th {
+            font-weight: bold;
+            font-size: 2rem;
+            user-select: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody td {
+            font-size: 1.8rem;
+        }
+
+        .table tbody td:first-child {
+            font-weight: bold;
+            color: #CE0071;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table tbody tr {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #CE0071;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .floating-button svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .modal-content button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #CE0071;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background-color: #a8005a;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "admin_app/navbar.html" %}
+    {% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+    <h1>Заказы</h1>
+    <div class="table-container">
+        <table class="table" id="order-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('id')">ID <span id="id-sort-icon"></span></th>
+                    <th onclick="sortTable('client')">Клиент <span id="client-sort-icon"></span></th>
+                    <th onclick="sortTable('product')">Товар <span id="product-sort-icon"></span></th>
+                    <th>Количество <span id="product-sort-icon"></span></th>
+                    <th onclick="sortTable('email')">Электронная почта <span id="email-sort-icon"></span></th>
+                    <th onclick="sortTable('address')">Адрес <span id="address-sort-icon"></span></th>
+                    <th onclick="sortTable('mobile')">Телефон <span id="mobile-sort-icon"></span></th>
+                    <th onclick="sortTable('order_date')">Дата заказа <span id="order_date-sort-icon"></span></th>
+                    <th onclick="sortTable('status')">Статус <span id="status-sort-icon"></span></th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr data-order-id="{{ order.id }}">
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.client.user.username }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.email }}</td>
+                    <td>{{ order.address }}</td>
+                    <td>{{ order.mobile }}</td>
+                    <td>{{ order.order_date }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>
+                        <button onclick="openModal({{ order.id }}, '{{ order.status }}')" class="btn btn-primary">
+                            Редактировать
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <h3>Изменить статус</h3>
+            <form method="post" id="statusForm">
+                {% csrf_token %}
+                <input type="hidden" name="order_id" id="orderIdInput">
+                <select name="status" id="statusSelect">
+                    <option value="Ожидается">Ожидается</option>
+                    <option value="Подтвержден">Подтвержден</option>
+                    <option value="В пути">В пути</option>
+                    <option value="Доставлен">Доставлен</option>
+                </select>
+                <button type="submit" class="btn btn-success">Сохранить</button>
+                <button type="button" class="btn btn-danger" onclick="closeModal()">Закрыть</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let clickCount = {}; // Счетчик нажатий для каждой колонки
+
+        // Функция для сортировки таблицы
+        function sortTable(column) {
+            const table = document.getElementById("order-table");
+            const rows = Array.from(table.tBodies[0].rows);
+            const icon = document.getElementById(`${column}-sort-icon`);
+
+            // Инициализация счетчика, если он еще не существует
+            if (!clickCount[column]) {
+                clickCount[column] = 0;
+            }
+
+            // Увеличиваем счетчик нажатий
+            clickCount[column]++;
+
+            // Если счетчик достиг 3, сбрасываем его и сортировку
+            if (clickCount[column] > 2) {
+                clickCount[column] = 0;
+                icon.innerHTML = ''; // Убираем иконку сортировки
+                // Восстанавливаем исходный порядок строк
+                const originalRows = Array.from(table.tBodies[0].rows);
+                table.tBodies[0].innerHTML = '';
+                originalRows.forEach(row => table.tBodies[0].appendChild(row));
+                return;
+            }
+
+            // Определяем порядок сортировки
+            if (clickCount[column] === 1) {
+                icon.innerHTML = '&#9650;'; // Треугольник вверх (сортировка по возрастанию)
+            } else if (clickCount[column] === 2) {
+                icon.innerHTML = '&#9660;'; // Треугольник вниз (сортировка по убыванию)
+            }
+
+            // Сортировка строк
+            rows.sort((a, b) => {
+                const aValue = a.cells[
+                    column === 'id' ? 0 :
+                        column === 'client' ? 1 :
+                            column === 'product' ? 2 :
+                                column === 'email' ? 3 :
+                                    column === 'address' ? 4 :
+                                        column === 'mobile' ? 5 :
+                                            column === 'order_date' ? 6 :
+                                                7 // status
+                ].innerText;
+                const bValue = b.cells[
+                    column === 'id' ? 0 :
+                        column === 'client' ? 1 :
+                            column === 'product' ? 2 :
+                                column === 'email' ? 3 :
+                                    column === 'address' ? 4 :
+                                        column === 'mobile' ? 5 :
+                                            column === 'order_date' ? 6 :
+                                                7 // status
+                ].innerText;
+
+                if (clickCount[column] === 1) {
+                    return aValue.localeCompare(bValue, undefined, { numeric: true }); // По возрастанию
+                } else if (clickCount[column] === 2) {
+                    return bValue.localeCompare(aValue, undefined, { numeric: true }); // По убыванию
+                }
+            });
+
+            // Очищаем таблицу и добавляем отсортированные строки
+            table.tBodies[0].innerHTML = '';
+            rows.forEach(row => table.tBodies[0].appendChild(row));
+        }
+
+        let currentOrderId = null;
+
+        function openModal(orderId, currentStatus) {
+            currentOrderId = orderId;
+            document.getElementById("statusSelect").value = currentStatus;
+            document.getElementById("orderIdInput").value = orderId;  // Устанавливаем значение скрытого поля
+            document.getElementById("statusForm").action = `/meneger/update_order_status/${orderId}/`;  // Обновляем action формы
+            document.getElementById("statusModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("statusModal").style.display = "none";
+        }
+        function removeMessages() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.remove(); // Удаляем сообщение
+                }, 2000); // 2000 миллисекунд = 2 секунды
+            });
+        }
+
+        // Вызываем функцию при загрузке страницы
+        window.onload = removeMessages;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #FFF7EF; /* Цвет фона страницы */
+            font-family: Arial, sans-serif; /* Изменение шрифта */
+            color: #A65249 !important; /* Цвет текста на странице */
+        }
+        #navbar {
+            color: #A65249; /* Цвет текста на странице */
+            background-color: #ffe4e1; /* Кремово-розовый цвет панели */
+            padding: 15px 0; /* Увеличение отступов */
+        }
+        #navbar img {
+            max-width: 70px;
+            height: auto;
+            display: flex;
+            margin: 0;
+        }
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .largenav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        .upper-links {
+            position: relative; /* Для позиционирования выпадающего меню */
+        }
+        .upper-links a {
+            color: #A65249; /* Цвет текста на странице */
+            padding: 10px; /* Увеличение отступов для ссылок */
+            text-decoration: none;
+            font-size: 20px; /* Увеличение размера текста */
+            transition: background-color 0.3s; /* Плавный переход при наведении */
+        }
+        .upper-links a:hover {
+            background-color:#ebd6d5; /* Легкий эффект при наведении */
+            border-radius: 5px;
+        }
+        .dropdown-menu {
+            color: #A65249; /* Цвет текста */
+            display: none; /* Скрываем выпадающее меню по умолчанию */
+            position: absolute;
+            top: 100%; /* Позиционируем ниже родительского элемента */
+            left: 0;
+            background-color: #fff; /* Цвет фона меню */
+            border: 1px solid #ccc; /* Обводка меню */
+            border-radius: 5px; /* Закругление углов */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тень */
+            z-index: 1000; /* Убедимся, что меню поверх других элементов */
+            padding: 10px 0; /* Отступы внутри меню */
+        }
+        .dropdown-menu li {
+            color: #A65249; /* Цвет текста */
+            list-style: none; /* Убираем маркеры списка */
+        }
+        .dropdown-menu a {
+            color: #A65249; /* Цвет текста на странице */
+            padding: 10px 20px; /* Отступы для ссылок */
+            text-decoration: none;
+            display: block; /* Ссылки занимают всю ширину */
+            transition: background-color 0.3s; /* Плавный переход при наведении */
+        }
+        .dropdown-menu a:hover {
+            color: #A65249; /* Цвет текста */
+            background-color: #893D62; /* Эффект при наведении */
+        }
+        .dropdown:hover .dropdown-menu {
+            color: #A65249; /* Цвет текста */
+            display: block; /* Показываем меню при наведении */
+        }
+        .navbar-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0; /* Убираем отступ для кнопки */
+        }
+        .navbar-button svg {
+            fill: #333; /* Цвет иконки */
+            width: 20px; /* Ширина иконки */
+            height: 20px; /* Высота иконки */
+        }
+        .navbar-search input[type="search"] {
+            padding: 5px;
+            border: 1px solid #ccc; /* Обводка поля ввода */
+            border-radius: 5px; /* Закругление углов */
+            margin-right: 10px; /* Отступ между полем ввода и кнопкой */
+        }
+        .cart-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffe4e1, #f8f9fa); /* Градиент */
+            border: 2px solid #d3d3d3; /* Цвет границы темнее фона */
+            border-radius: 5px; /* Закругление углов */
+            padding: 10px 30px; /* Увеличенные отступы для вытянутой кнопки */
+            text-decoration: none; /* Убираем подчеркивание */
+            color: #A65249; /* Цвет текста */
+            font-size: 18px; /* Размер шрифта */
+            transition: background-color 0.3s, border-color 0.3s; /* Плавный переход */
+            margin-left: 20px; /* Отступ от кнопки поиска */
+        }
+        .cart-button:hover {
+            color: #A65249; /* Цвет текста */
+            border-color: #b0b0b0; /* Темнее при наведении */
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <div class="container navbar-container">
+            <a href="/"><img src="{% static 'img/ScentSoul.png' %}" alt="ScentSoul"></a>
+            <ul class="largenav">
+                <li class="upper-links"><a href="/catalog">Каталог</a></li>
+                <li class="upper-links"><a href="/about_us">О нас</a></li>
+                <li class="upper-links"><a href="/news">Новости</a></li>
+                <li class="upper-links dropdown">
+                    <a class="links" href="">Вход/Регистрация</a>
+                    <ul class="dropdown-menu">
+                        <li class="profile-li"><a class="profile-links" href="/login">Вход</a></li>
+                        <li class="profile-li"><a class="profile-links" href="/signup">Регистрация</a></li>
+                    </ul>
+                </li>
+            </ul>
+<<<<<<< HEAD
+=======
+            <div class="navbar-search">
+                <form action="/catalog" method="get">
+                    <input type="search" placeholder="Поиск" name="query" id="query">
+                    <button class="navbar-button" type="submit">
+                        <!-- SVG иконка поиска -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M10.5 2C5.81 2 2 5.81 2 10.5S5.81 19 10.5 19c2.41 0 4.59-.87 6.29-2.3l4.25 4.25 1.5-1.5-4.25-4.25C19.13 14.09 20 12.3 20 10.5 20 5.81 16.19 2 11.5 2zM10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+>>>>>>> 75f9f11385247bda242880355abcf51ee6601242
+            <a href="/login" class="cart-button">
+                Корзина
+            </a>
+        </div>
+    </div>
+</body>
+</html>

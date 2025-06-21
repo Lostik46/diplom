@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="ru" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Вход</title>
+    <style>
+        body {
+            background-color: #FFF7EF; /* Цвет фона */
+            font-family: Arial, sans-serif; /* Шрифт */
+        }
+
+        .card {
+            margin-top: 50px; /* Отступ сверху */
+            border: 1px solid #CE0071; /* Цвет границы */
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тень для карточки */
+        }
+
+        .box {
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #CE0071; /* Цвет заголовка */
+            font-weight: bold; /* Жирный шрифт */
+        }
+
+        .form-control {
+            border-radius: 0.25rem; /* Скругление углов полей ввода */
+            border: 1px solid #CE0071; /* Цвет границы полей ввода */
+        }
+
+        .form-control:focus {
+            border-color: #CE0071; /* Цвет границы при фокусе */
+            box-shadow: 0 0 5px rgba(206, 0, 113, 0.5); /* Тень при фокусе */
+        }
+
+        .btn-primary {
+            width: 100%;
+            background-color: #CE0071; /* Цвет кнопки */
+            border-color: #CE0071; /* Цвет границы кнопки */
+            font-weight: bold; /* Жирный шрифт */
+            transition: background-color 0.3s ease; /* Плавное изменение цвета */
+        }
+
+        .btn-primary:hover {
+            background-color: #A8005A; /* Цвет кнопки при наведении */
+            border-color: #A8005A; /* Цвет границы кнопки при наведении */
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px; /* Отступ для сообщений об ошибках */
+        }
+
+        .alert-danger {
+            background-color: #FFEBEE; /* Цвет фона для сообщений об ошибках */
+            border-color: #FFCDD2; /* Цвет границы для сообщений об ошибках */
+            color: #C62828; /* Цвет текста */
+            text-align: center; /* Выравнивание текста по центру */
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #666; /* Цвет текста в футере */
+        }
+    </style>
+</head>
+<body>
+    {% include "client_app/navbar.html" %}
+    <br> <br> <br>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <form class="box" method="post">
+                        {% csrf_token %}
+                        <h1>Вход</h1>
+                        {% if messages %}
+                            <div class="box">
+                                {% for message in messages %}
+                                    <div class="alert alert-danger">{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Поле для логина -->
+                        <div class="form-group">
+                            {% render_field form.username class="form-control mb-3" placeholder="Логин" %}
+                        </div>
+                        
+                        <!-- Поле для пароля -->
+                        <div class="form-group">
+                            {% render_field form.password class="form-control" placeholder="Пароль" %}
+                        </div>
+                        
+                        <!-- Кнопка входа -->
+                        <input type="submit" class="btn btn-primary mt-3" value="Войти" style="margin-bottom: 16px;">
+                        
+                        <!-- Ссылка на регистрацию (если нужно) -->
+                        <div class="footer">
+                            Нет аккаунта? <a href="{% url 'signup' %}" style="color: #CE0071;">Зарегистрируйтесь</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

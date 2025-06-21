@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: #CE0071;
+            font-weight: bold;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            width: 95%;
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .table thead {
+            background-color: #CE0071;
+            color: #fff;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .table th {
+            font-weight: bold;
+            font-size: 2rem;
+            user-select: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody td {
+            font-size: 1.8rem;
+        }
+
+        .table tbody td:first-child {
+            font-weight: bold;
+            color: #CE0071;
+        }
+
+        .table tbody td:nth-child(4) {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .table tbody td:nth-child(6) {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .table tbody td:last-child {
+            color: #6c757d;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table tbody tr {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #CE0071;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .floating-button svg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "admin_app/navbar.html" %}
+
+    <h1>Новости</h1>
+    <div class="table-container">
+        <table class="table" id="news-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('title')">Заголовок <span id="title-sort-icon"></span></th>
+                    <th>Изображение</th>
+                    <th>Краткое описание</th>
+                    <th onclick="sortTable('publish_date')">Дата публикации <span id="publish_date-sort-icon"></span></th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for news in news %}
+                <tr>
+                    <td>{{ news.title }}</td>
+                    <td>
+                        {% if news.img %}
+                        <img src="{{ news.img.url }}" alt="{{ news.title }}" style="width: 50px; height: 50px; border-radius: 5px;">
+                        {% else %}
+                        Нет изображения
+                        {% endif %}
+                    </td>
+                    <td>{{ news.short_text }}</td>
+                    <td>{{ news.publish_date|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'edit_news' news.id %}" class="btn btn-primary">Редактировать</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{% url 'add_news' %}" class="floating-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4V20M4 12H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </a>
+
+    <script>
+        let clickCount = {}; // Счетчик нажатий для каждой колонки
+
+        function sortTable(column) {
+            const table = document.getElementById("news-table");
+            const rows = Array.from(table.tBodies[0].rows);
+            const icon = document.getElementById(`${column}-sort-icon`);
+
+            if (!clickCount[column]) {
+                clickCount[column] = 0;
+            }
+
+            clickCount[column]++;
+
+            if (clickCount[column] > 2) {
+                clickCount[column] = 0;
+                icon.innerHTML = '';
+                const originalRows = Array.from(table.tBodies[0].rows);
+                table.tBodies[0].innerHTML = '';
+                originalRows.forEach(row => table.tBodies[0].appendChild(row));
+                return;
+            }
+
+            if (clickCount[column] === 1) {
+                icon.innerHTML = '&#9650;';
+            } else if (clickCount[column] === 2) {
+                icon.innerHTML = '&#9660;';
+            }
+
+            rows.sort((a, b) => {
+                const aValue = a.cells[column === 'title' ? 0 : 3].innerText;
+                const bValue = b.cells[column === 'title' ? 0 : 3].innerText;
+
+                if (clickCount[column] === 1) {
+                    return aValue.localeCompare(bValue, undefined, { numeric: true });
+                } else if (clickCount[column] === 2) {
+                    return bValue.localeCompare(aValue, undefined, { numeric: true });
+                }
+            });
+
+            table.tBodies[0].innerHTML = '';
+            rows.forEach(row => table.tBodies[0].appendChild(row));
+        }
+    </script>
+</body>
+
+</html>

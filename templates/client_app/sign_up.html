@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+{% load widget_tweaks %}
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Регистрация</title>
+    <style>
+        body {
+            background-color: #FFF7EF;
+        }
+
+        .card {
+            margin-top: 50px;
+            border: 1px solid #CE0071	;
+            border-radius: 0.5rem;
+        }
+
+        .box {
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: white;
+            padding: 20px;
+            width: 90%;
+            max-width: 950px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #map {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .address-confirm {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .address-confirm p {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+
+        .address-confirm button {
+            padding: 8px 20px;
+            background: #9B2766;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .address-confirm button:hover {
+            background: #9B2766;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "client_app/navbar.html" %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <form class="box" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <h1>Регистрация</h1>
+
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-info">{{ message }}</div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <div class="form-group">
+                            {% render_field userForm.first_name class="form-control" placeholder="Имя" style="margin-bottom: 16px;" %}
+                            {% render_field userForm.last_name class="form-control" placeholder="Фамилия" style="margin-bottom: 16px;" %}
+                            {% render_field userForm.username class="form-control" placeholder="Логин" style="margin-bottom: 16px;" %}
+                            {% render_field userForm.password class="form-control" placeholder="Пароль" style="margin-bottom: 16px;" %}
+                        </div>
+                        
+                        <h4>Дополнительная информация</h4>
+                        <div class="form-group">
+                            {% render_field ClientForm.address class="form-control" placeholder="Адрес" style="margin-bottom: 16px;" %}
+                            <button type="button" id="openMapButton" class="btn btn-primary" style="margin-bottom: 16px; background-color: #D3BAC7; border-color: #BFB0AE;">Указать на карте</button>
+                            {% render_field ClientForm.mobile class="form-control" placeholder="Мобильный телефон" style="margin-bottom: 16px;" %}
+                            {% render_field ClientForm.email class="form-control" placeholder="Email" style="margin-bottom: 16px;" %}
+                        </div>
+                                                
+                        <input type="submit" class="btn btn-primary mt-3" value="Зарегистрироваться" style="background-color: #D3BAC7; border-color: #BFB0AE;">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mapModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="map"></div>
+            <div id="addressConfirm" class="address-confirm" style="display: none;">
+                <p id="selectedAddress"></p>
+                <button id="confirmAddressButton">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        var addressInput = document.querySelector('input[name="address"]');
+        var openMapButton = document.getElementById('openMapButton');
+        var mapModal = document.getElementById('mapModal');
+        var closeBtn = document.querySelector('.close');
+        var addressConfirm = document.getElementById('addressConfirm');
+        var selectedAddress = document.getElementById('selectedAddress');
+        var confirmAddressButton = document.getElementById('confirmAddressButton');
+
+        var map, marker;
+
+        openMapButton.addEventListener('click', function () {
+            mapModal.style.display = 'flex';
+
+            if (!map) {
+                map = L.map('map', {attributionControl: false }).setView([51.7303, 36.1926], 12);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                map.on('click', function (e) {
+                    var lat = e.latlng.lat;
+                    var lng = e.latlng.lng;
+
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+
+                    marker = L.marker([lat, lng]).addTo(map);
+
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.address) {
+                                var city = data.address.city || data.address.town || data.address.village || '';
+                                var street = data.address.road || '';
+                                var houseNumber = data.address.house_number || '';
+                                var postcode = data.address.postcode || '';
+
+                                var formattedAddress = `${city}, ${street}, ${houseNumber}, ${postcode}`;
+
+                                selectedAddress.textContent = formattedAddress;
+                                addressConfirm.style.display = 'block';
+                            } else {
+                                alert('Адрес не найден');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Ошибка при получении адреса:', error);
+                            alert('Не удалось определить адрес');
+                        });
+                });
+            } else {
+                addressConfirm.style.display = 'block';
+            }
+        });
+
+        confirmAddressButton.addEventListener('click', function () {
+            addressInput.value = selectedAddress.textContent; // Устанавливаем значение в поле адреса
+            addressConfirm.style.display = 'none';
+            mapModal.style.display = 'none';
+        });
+
+
+        closeBtn.addEventListener('click', function () {
+            mapModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === mapModal) {
+                mapModal.style.display = 'none';
+            }
+        });
+<<<<<<< HEAD
+
+        document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.getElementById('id_mobile');
+    
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            e.target.value = !x[1] ? '' : '+7 (' + x[2] + (x[3] ? ')' + x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+    }
+});
+=======
+>>>>>>> 75f9f11385247bda242880355abcf51ee6601242
+    </script>
+</body>
+
+</html>

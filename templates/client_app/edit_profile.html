@@ -1,0 +1,83 @@
+{% extends 'client_app/base.html' %}
+
+{% block content %}
+<style>
+    .edit-profile-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-profile-container h1 {
+        color: #A65249;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .edit-profile-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .edit-profile-form label {
+        font-weight: bold;
+        color: #A65249;
+    }
+
+    .edit-profile-form input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .edit-profile-form input:focus {
+        border-color: #b0b0b0;
+    }
+
+    .save-button {
+        padding: 15px;
+        background: linear-gradient(135deg, #ffe4e1, #f8f9fa);
+        border: 2px solid #d3d3d3;
+        border-radius: 5px;
+        color: #A65249;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .save-button:hover {
+        background: linear-gradient(135deg, #f8f9fa, #ffe4e1);
+        border-color: #b0b0b0;
+    }
+
+    .messages {
+        margin-bottom: 20px;
+    }
+
+    .messages .success {
+        color: green;
+        background-color: #e6ffe6;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid green;
+    }
+</style>
+
+<div class="edit-profile-container">
+    <h1>Редактирование профиля</h1>
+
+    <form method="post" class="edit-profile-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save-button">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "client_app/base.html" %}
+{% load static %}
+{% block content %}
+<title>{{ product.name }}</title>
+<style>
+    .block {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .product-detail {
+        display: flex;
+        background-color: #ffe4e1;
+        padding: 16px;
+        border-radius: 16px;
+        gap: 40px;
+        align-items: flex-start;
+    }
+
+    .product-image {
+        flex: 1;
+        /* Левая часть занимает 1 часть пространства */
+        text-align: center;
+        /* Центрирование изображения */
+    }
+
+    .product-image img {
+        max-width: 100%;
+        height: auto;
+        width: 550px; /* Увеличьте ширину */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-info {
+        flex: 2;
+        /* Правая часть занимает 2 части пространства */
+    }
+
+    .product-info h2 {
+        margin-top: 0;
+        font-size: 24px;
+        color: #A65249;
+    }
+
+    .product-info p {
+        font-size: 16px;
+        color: #A65249;
+        line-height: 1.6;
+    }
+
+    .product-info h3 {
+        font-size: 20px;
+        color: #A65249;
+        margin: 10px 0;
+    }
+
+    .add-to-cart-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ffe4e1, #f8f9fa);
+        /* Градиент */
+        border: 2px solid #d3d3d3;
+        /* Цвет границы темнее фона */
+        border-radius: 5px;
+        /* Закругление углов */
+        padding: 10px 30px;
+        /* Увеличенные отступы для вытянутой кнопки */
+        text-decoration: none;
+        /* Убираем подчеркивание */
+        color: #A65249;
+        /* Цвет текста */
+        font-size: 18px;
+        /* Размер шрифта */
+        transition: background-color 0.3s, border-color 0.3s;
+        /* Плавный переход */
+        margin-left: 20px;
+        /* Отступ от кнопки поиска */
+    }
+
+    .add-to-cart-button:hover {
+        color: #A65249;
+        /* Цвет текста */
+        border-color: #b0b0b0;
+        /* Темнее при наведении */
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #f8f9fa;
+        color: #333;
+        text-decoration: none;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+        background-color: #e9ecef;
+    }
+
+    /* Стили для левой части (картинка, цена, кнопка) */
+    .left-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        /* Расстояние между элементами */
+        align-items: center;
+        /* Центрирование по горизонтали */
+    }
+
+    .price-card {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        align-items: center;
+    }
+    .product-price {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .product-price.sale {
+        color: red;
+    }
+
+    .product-price del {
+        color: #A65249;
+        font-size: 14px;
+        margin-left: 5px;
+    }
+</style>
+
+<div class="block">
+  <div class="product-detail">
+    <!-- Левая часть: картинка, цена, кнопка -->
+    <div class="left-section">
+      <div class="product-image">
+        <img src="{{ product.product_image.url }}" alt="{{ product.name }}" width="400" height="400">
+      </div>
+      <div class="price-card">
+        <p class="product-price {% if product.is_on_sale and product.discount %}sale{% endif %}">
+            {% if product.is_on_sale and product.discount %}
+                ₽{{ product.sale_price|floatformat:2 }} <del>₽{{ product.price }}</del>
+            {% else %}
+                ₽{{ product.price }}
+            {% endif %}
+        </p>
+        {% if user.is_authenticated %}
+        <form action="{% url 'add_to_cart' product.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="add-to-cart-button">Добавить в корзину</button>
+        </form>
+        {% else %}
+        <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="add-to-cart-button">Добавить в корзину</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Правая часть: описание и остальная информация -->
+    <div class="product-info">
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.category }}</p>
+      <h2>Описание</h2>
+      <p>{{ product.description }}</p>
+      <h3>Количество: {{ product.quantity }}</h3>
+      <h3>Объём: {{ product.volume }}</h3>
+    </div>
+  </div>
+
+  <a href="{% url 'catalog' %}" class="back-button">Назад к списку товаров</a>
+</div>
+{% endblock content %}

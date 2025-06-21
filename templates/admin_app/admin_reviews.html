@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        /* Ваши существующие стили */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: #CE0071;
+            font-weight: bold;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            width: 95%;
+            overflow: visible;
+            /* Разрешаем элементам выходить за границы */
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background-color: #fff;
+            font-size: 1.2rem;
+            overflow: visible;
+            /* Разрешаем элементам выходить за границы таблицы */
+        }
+
+        .table thead {
+            background-color: #CE0071;
+            color: #fff;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+            position: relative;
+            /* Для позиционирования раскрывающегося контейнера */
+        }
+
+        .table th {
+            font-weight: bold;
+            font-size: 2rem;
+            user-select: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody td {
+            font-size: 1.8rem;
+        }
+
+        .table tbody td:first-child {
+            font-weight: bold;
+            color: #CE0071;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table tbody tr {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .btn-action {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-publish {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .btn-publish:hover {
+            background-color: #218838;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .btn-confirm {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-confirm:hover {
+            background-color: #e0a800;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        /* Стиль для подсветки строки */
+        .highlighted-row {
+            background-color: #e0f7ff !important;
+            /* Бледно-синий цвет */
+        }
+
+        /* Стили для текста отзыва */
+        .review-text-container {
+            position: relative;
+            max-width: 300px;
+            /* Фиксированная ширина контейнера */
+            margin: 0 auto;
+            /* Центрируем контейнер */
+        }
+
+        .review-text {
+            white-space: nowrap;
+            /* Текст не переносится */
+            overflow: hidden;
+            /* Скрываем текст, который не помещается */
+            text-overflow: ellipsis;
+            /* Добавляем многоточие */
+            cursor: pointer;
+            /* Курсор в виде указателя */
+            transition: all 0.3s ease;
+            /* Плавное раскрытие */
+        }
+
+        .review-text-expanded {
+            position: absolute;
+            top: 50%;
+            /* Центрируем по вертикали */
+            left: 50%;
+            /* Центрируем по горизонтали */
+            transform: translate(-50%, -50%) scaleY(0);
+            /* Начальное состояние: свернуто */
+            width: 300px;
+            /* Ширина раскрытого поля */
+            background-color: #fff;
+            /* Фон раскрытого поля */
+            border: 1px solid #ddd;
+            /* Граница */
+            padding: 10px;
+            /* Отступы */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* Тень */
+            z-index: 1000;
+            /* Поднимаем над другими элементами */
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            /* Анимация раскрытия */
+            white-space: normal;
+            /* Разрешаем перенос текста */
+            word-wrap: break-word;
+            /* Перенос текста на новую строку */
+            opacity: 0;
+            /* Начальное состояние: скрыто */
+            pointer-events: none;
+            /* Игнорируем события мыши, пока не раскрыто */
+        }
+
+        .review-text-container:hover .review-text-expanded {
+            transform: translate(-50%, -50%) scaleY(1);
+            /* Раскрываем поле */
+            opacity: 1;
+            /* Показываем поле */
+            pointer-events: auto;
+            /* Разрешаем взаимодействие */
+        }
+    </style>
+</head>
+
+<body>
+    {% include "admin_app/navbar.html" %}
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <h1>Отзывы</h1>
+    <div class="table-container">
+        <table class="table" id="review-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('user')">Пользователь <span id="user-sort-icon"></span></th>
+                    <th onclick="sortTable('product')">Товар <span id="product-sort-icon"></span></th>
+                    <th onclick="sortTable('rating')">Рейтинг <span id="rating-sort-icon"></span></th>
+                    <th onclick="sortTable('text')">Текст отзыва <span id="text-sort-icon"></span></th>
+                    <th onclick="sortTable('created_at')">Дата создания <span id="created_at-sort-icon"></span></th>
+                    <th onclick="sortTable('published')">Статус<span id="published-sort-icon"></span>
+                    </th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr data-review-id="{{ review.id }}" {% if review.id|stringformat:"s" == highlight_id %}class="highlighted-row"{% endif %}>
+                    <td>{{ review.user.user.username }}</td>
+                    <td>{{ review.product.name }}</td>
+                    <td>{{ review.rating }}</td>
+                    <td>
+                        <div class="review-text-container">
+                            <div class="review-text">
+                                {{ review.text|truncatechars:50 }}
+                            </div>
+                            <div class="review-text-expanded">
+                                {{ review.text }}
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ review.created_at|date:"d.m.Y H:i" }}</td>
+                    <td>{{ review.published|yesno:"Опубликован,Не опубликован" }}</td>
+                    <td>
+                        <!-- Форма для публикации отзыва -->
+                        <form action="{% url 'publish_review' review.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-action btn-publish">
+                                Опубликовать
+                            </button>
+                        </form>
+
+                        <!-- Форма для удаления отзыва -->
+                        <form action="{% url 'delete_review' review.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-action btn-delete">
+                                Удалить
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let clickCount = {};
+        // Функция для сортировки таблицы (оставлена для примера)
+        function sortTable(column) {
+            const table = document.getElementById("review-table");
+            const rows = Array.from(table.tBodies[0].rows);
+            const icon = document.getElementById(`${column}-sort-icon`);
+
+            if (!clickCount[column]) {
+                clickCount[column] = 0;
+            }
+
+            clickCount[column]++;
+
+            if (clickCount[column] > 2) {
+                clickCount[column] = 0;
+                icon.innerHTML = '';
+                const originalRows = Array.from(table.tBodies[0].rows);
+                table.tBodies[0].innerHTML = '';
+                originalRows.forEach(row => table.tBodies[0].appendChild(row));
+                return;
+            }
+
+            if (clickCount[column] === 1) {
+                icon.innerHTML = '&#9650;';
+            } else if (clickCount[column] === 2) {
+                icon.innerHTML = '&#9660;';
+            }
+
+            rows.sort((a, b) => {
+                const aValue = a.cells[
+                    column === 'user' ? 0 :
+                        column === 'product' ? 1 :
+                            column === 'rating' ? 2 :
+                                column === 'text' ? 3 :
+                                    column === 'created_at' ? 4 :
+                                        5 // published
+                ].innerText;
+                const bValue = b.cells[
+                    column === 'user' ? 0 :
+                        column === 'product' ? 1 :
+                            column === 'rating' ? 2 :
+                                column === 'text' ? 3 :
+                                    column === 'created_at' ? 4 :
+                                        5 // published
+                ].innerText;
+
+                if (clickCount[column] === 1) {
+                    return aValue.localeCompare(bValue, undefined, { numeric: true });
+                } else if (clickCount[column] === 2) {
+                    return bValue.localeCompare(aValue, undefined, { numeric: true });
+                }
+            });
+
+            table.tBodies[0].innerHTML = '';
+            rows.forEach(row => table.tBodies[0].appendChild(row));
+        }
+
+        // Функция для удаления сообщений через 2 секунды
+        function removeMessages() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.remove(); // Удаляем сообщение
+                }, 2000); // 2000 миллисекунд = 2 секунды
+            });
+        }
+
+        // Вызываем функцию при загрузке страницы
+        window.onload = removeMessages;
+    </script>
+</body>
+
+</html>

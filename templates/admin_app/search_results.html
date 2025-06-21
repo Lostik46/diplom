@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #CE0071;
+            border-radius: 25px 0 0 25px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #a8005c;
+        }
+
+        .search-button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #CE0071;
+            color: #fff;
+            border: none;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-button:hover {
+            background-color: #a8005c;
+        }
+
+        .search-button svg {
+            width: 20px;
+            height: 20px;
+            fill: #fff;
+        }
+
+        .search-results {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 1200px;
+        }
+
+        .search-results h1 {
+            text-align: center;
+            color: #CE0071;
+            margin-bottom: 20px;
+        }
+
+        .search-results table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .search-results th,
+        .search-results td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .search-results th {
+            background-color: #CE0071;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .search-results tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .search-results tr:last-child td {
+            border-bottom: none;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .result-link {
+            color: #CE0071;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .result-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "admin_app/navbar.html" %}
+
+    <!-- Панель поиска -->
+    <div class="search-container">
+        <form class="search-form" action="{% url 'global_search' %}" method="get">
+            <input type="search" class="search-input" placeholder="Введите запрос..." name="query" id="query"
+                value="{{ query }}">
+            <button class="search-button" type="submit">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path
+                        d="M10.5 2C5.81 2 2 5.81 2 10.5S5.81 19 10.5 19c2.41 0 4.59-.87 6.29-2.3l4.25 4.25 1.5-1.5-4.25-4.25C19.13 14.09 20 12.3 20 10.5 20 5.81 16.19 2 11.5 2zM10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13z" />
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Результаты поиска -->
+    <div class="search-results">
+        <h1>Результаты поиска для "{{ query }}"</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Таблица</th>
+                    <th>Результат</th>
+                    <th>Детали</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.table }}</td>
+                    <td>
+                        {% if result.url %}
+                        <a href="{{ result.url }}" class="result-link">{{ result.result }}</a>
+                        {% else %}
+                        {{ result.result }}
+                        {% endif %}
+                    </td>
+                    <td>{{ result.details }}</td> <!-- Дополнительная информация -->
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="no-results">Ничего не найдено.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

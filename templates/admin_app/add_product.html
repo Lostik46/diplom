@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            font-size: 1.2rem; /* Увеличенный размер текста */
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: #CE0071;
+            font-weight: bold;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            width: 50%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            width: 100%;
+        }
+
+        form p {
+            margin-bottom: 20px; /* Увеличенный отступ между полями */
+        }
+
+        form label {
+            font-weight: bold;
+            color: #CE0071;
+            font-size: 1.4rem; /* Увеличенный размер текста меток */
+        }
+
+        form input,
+        form textarea,
+        form select {
+            width: 100%;
+            padding: 12px; /* Увеличенный отступ внутри полей */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1.2rem; /* Увеличенный размер текста в полях */
+            margin-top: 8px; /* Увеличенный отступ сверху */
+        }
+
+        form input:focus,
+        form textarea:focus,
+        form select:focus {
+            border-color: #CE0071;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #CE0071;
+            border: none;
+            padding: 12px 24px; /* Увеличенный размер кнопок */
+            font-size: 1.2rem; /* Увеличенный размер текста кнопок */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #a8005c;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            padding: 12px 24px; /* Увеличенный размер кнопок */
+            font-size: 1.2rem; /* Увеличенный размер текста кнопок */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px; /* Увеличенный отступ сверху */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+    <title>Добавить продукт</title>
+</head>
+
+<body>
+
+    <h1>Добавить новый продукт</h1>
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="button-container">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a href="{% url 'admin_products' %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+{% extends 'client_app/base.html' %}
+
+{% block content %}
+<style>
+    /* Ваши стили */
+    .checkout-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .checkout-container h1 {
+        text-align: center;
+        color: #A65249;
+        margin-bottom: 20px;
+    }
+
+    .cart-items {
+        margin-bottom: 20px;
+    }
+
+    .cart-items h2 {
+        color: #A65249;
+        margin-bottom: 10px;
+    }
+
+    .cart-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .cart-item label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #A65249;
+    }
+
+    .cart-item input[type="checkbox"] {
+        transform: scale(1.2);
+    }
+
+    .contact-info {
+        margin-bottom: 20px;
+    }
+
+    .contact-info h2 {
+        color: #A65249;
+        margin-bottom: 10px;
+    }
+
+    .contact-info label {
+        display: block;
+        margin-bottom: 5px;
+        color: #A65249;
+        font-weight: bold;
+    }
+
+    .contact-info input[type="email"],
+    .contact-info input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .contact-info input[type="email"]:focus,
+    .contact-info input[type="text"]:focus {
+        border-color: #b0b0b0;
+    }
+
+    .confirm-order-button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #ffe4e1, #f8f9fa);
+        border: 2px solid #d3d3d3;
+        border-radius: 5px;
+        text-align: center;
+        color: #A65249;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .confirm-order-button:hover {
+        background: linear-gradient(135deg, #f8f9fa, #ffe4e1);
+        border-color: #b0b0b0;
+    }
+
+    .messages {
+        margin-bottom: 20px;
+    }
+
+    .messages .error {
+        color: red;
+        background-color: #ffe6e6;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid red;
+    }
+
+    .messages .success {
+        color: green;
+        background-color: #e6ffe6;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid green;
+    }
+</style>
+<br><br>
+<div class="checkout-container">
+    <h1>Оформление заказа</h1>
+
+    <!-- Отображение сообщений -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="{% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="cart-items">
+            <h2>Выберите товары для заказа:</h2>
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <label>
+                        <input type="checkbox" name="selected_items" value="{{ item.id }}" checked>
+                        {{ item.product.name }} (Количество: {{ item.quantity }}) - ₽{{ item.total_price }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    
+        <div class="contact-info">
+            <h2>Контактная информация:</h2>
+            <label for="email">Электронная почта:</label>
+            <input type="email" id="email" name="email" value="{{ client.email }}">
+    
+            <label for="mobile">Мобильный телефон:</label>
+            <input type="text" id="mobile" name="mobile" value="{{ client.mobile }}">
+    
+            <label for="address">Адрес доставки:</label>
+            <input type="text" id="address" name="address" value="{{ client.address }}">
+        </div>
+    
+        <button type="submit" class="confirm-order-button">Оплатить заказ</button>
+    </form>
+</div>
+<script>
+    function removeMessages() {
+        const messages = document.querySelectorAll('.messages div');
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.remove(); 
+            }, 2000);
+        });
+    }
+
+    window.onload = removeMessages;
+</script>
+{% endblock %}
