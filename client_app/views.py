@@ -10,17 +10,13 @@ from django.contrib import messages
 from django.conf import settings
 from . import forms
 from django.utils.safestring import mark_safe
-<<<<<<< HEAD
 import logging
 logger = logging.getLogger(__name__)
-=======
->>>>>>> 75f9f11385247bda242880355abcf51ee6601242
 
 def client_signup_view(request):
     userForm = forms.ClientUserForm()
     clientForm = forms.ClientForm()
     mydict = {'userForm': userForm, 'ClientForm': clientForm}
-<<<<<<< HEAD
     
     if request.method == 'POST':
         userForm = forms.ClientUserForm(request.POST)
@@ -62,7 +58,6 @@ def client_signup_view(request):
             if 'email' in clientForm.errors:
                 messages.error(request, "Введите корректный адрес электронной почты (например: example@mail.ru).")
     
-=======
     if request.method == 'POST':
         userForm = forms.ClientUserForm(request.POST)
         clientForm = forms.ClientForm(request.POST, request.FILES)
@@ -77,7 +72,6 @@ def client_signup_view(request):
             return redirect('login') 
         else:
             messages.error(request, "Пожалуйста, исправьте ошибки в форме.")
->>>>>>> 75f9f11385247bda242880355abcf51ee6601242
     return render(request, 'client_app/sign_up.html', context=mydict)
 
 def home_view(request):
